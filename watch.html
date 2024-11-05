@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- HTML -->
+    <div class="quiz-container">
+      <div class="question"></div>
+      <div class="choices">
+        <div class="select_1"></div>
+        <div class="select_2"></div>
+        <div class="select_3"></div>
+        <div class="select_4"></div>
+      </div>
+      <div class="stopwatch">
+        <div id="js-stopwatch">00:00:00</div>
+        <button id="js-stopwatchStart">スタート</button>
+        <button id="js-stopwatchStop">ストップ</button>
+        <button id="js-stopwatchResset">リセット</button>
+      </div>
+    </div>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    // JavaScript (jQuery required)
+    $(document).ready(function () {
+      // 要素の取得
+      const $watch = $("#js-stopwatch");
+      const $start = $("#js-stopwatchStart");
+      const $stop = $("#js-stopwatchStop");
+      const $reset = $("#js-stopwatchResset");
+
+      // 時間管理の変数
+      let startTime;
+      let stopTime = 0;
+      let timeoutID;
+
+      // 時間表示の更新関数
+      function displayTime() {
+        const currentTime = new Date(Date.now() - startTime + stopTime);
+        const h = String(currentTime.getHours() - 9).padStart(2, "0");
+        const m = String(currentTime.getMinutes()).padStart(2, "0");
+        const s = String(currentTime.getSeconds()).padStart(2, "0");
+        $watch.text(`${h}:${m}:${s}`);
+        timeoutID = setTimeout(displayTime, 1000);
+      }
+
+      // スタートボタンのイベント
+      $start.on("click", function () {
+        $start.prop("disabled", true);
+        $stop.prop("disabled", false);
+        $reset.prop("disabled", true);
+        startTime = Date.now();
+        displayTime();
+      });
+
+      // ストップボタンのイベント
+      $stop.on("click", function () {
+        clearTimeout(timeoutID);
+        stopTime += Date.now() - startTime;
+        $start.prop("disabled", false);
+        $stop.prop("disabled", true);
+        $reset.prop("disabled", false);
+      });
+
+      // リセットボタンのイベント
+      $reset.on("click", function () {
+        $watch.text("00:00:00");
+        stopTime = 0;
+        $start.prop("disabled", false);
+        $stop.prop("disabled", true);
+        $reset.prop("disabled", true);
+      });
+    });
+  </script>
+</html>

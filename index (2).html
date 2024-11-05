@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>クイズアプリ</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+
+  <body>
+    <main>
+      <div id="container">
+        <div class="main_box">
+          <div class="main_title">
+            <h1>謎解きの世界にようこそ</h1>
+            <h2>クイズにチャレンジしてみよう！！！</h2>
+            <input
+              type="button"
+              value="クイズにチャレンジしてみる"
+              class="try_botton"
+            />
+          </div>
+        </div>
+
+        <div class="question_box">
+          <div class="question_area">
+            <h2>問題</h2>
+            <!-- ここにJSで問題が入ってくる -->
+            <p class="question">ボタンを押してください。ここに問題が出題されます。</p>
+          </div>
+        </div>
+
+        <div class="time_box">
+          <div class="time_box_area">
+            <h2>回答時間</h2>
+            <div id="display">00:00:00</div>
+          </div>
+          <div class="choices_box">
+            <button aria-label="選択肢1" class="select_1" type="button">
+              A
+            </button>
+            <button aria-label="選択肢2" class="select_2" type="button">
+              B
+            </button>
+            <button aria-label="選択肢3" class="select_3" type="button">
+              C
+            </button>
+            <button aria-label="選択肢4" class="select_4" type="button">
+              D
+            </button>
+          </div>
+        </div>
+
+        <div class="result_box">
+          <!-- 左側のブロック -->
+          <div class="stats_block">
+            <div class="count_area">
+              <h3>質問数</h3>
+              <h3 class="question_count"></h3>
+            </div>
+            <div class="count">
+              <h3>正解数</h3>
+              <h3 class="correct_count"></h3>
+            </div>
+            <div class="count">
+              <h3>正解率</h3>
+              <h3 class="correct_per"></h3>
+            </div>
+          </div>
+
+          <!-- 右側のブロック -->
+          <div class="evaluation_area">
+            <div class="comment">
+              <h3>コメント</h3>
+              <h3 class="comment_parson"></h3>
+            </div>
+            <div class="evaluation">
+              <h3>評価</h3>
+              <h3 class="evaluation_comment"></h3>
+            </div>
+            <div class="img">
+              <h3>生成画像</h3>
+              <h3 class="evaluation_img"></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // クイズの問題と回答を定義
+        const quiz_questions = [
+          {
+            question: "2024年現在、世界一高いビルはどれでしょうか？　\nその高さと共に当ててください！",
+            choices: ["ブルジュ・ハリファ（ドバイ）\n- 828m", "キングダムタワー（サウジアラビア）\n - 1007m", "上海タワー（中国）\n - 632m", "ロッテワールドタワー（韓国）\n - 556m"],
+            answer: "ブルジュ・ハリファ（ドバイ）\n- 828m",
+          },
+          {
+            question: "次の中で、実際に存在する建築物はどれでしょうか？",
+            choices: ["上下逆さまの家\n（ポーランド）", "回転する超高層ビル\n（ドバイ）", "透明なガラスの教会\n（ベルギー）", "地下に埋まったピラミッド型ホテル\n（アイスランド）"],
+            answer: "透明なガラスの教会\n（ベルギー）",
+          },
+          {
+            question: "次の中で、実際に行われている最新の建設技術はどれでしょうか？",
+            choices: ["自己修復するコンクリート", "空中で3Dプリントする建設ドローン", "思考で操作できる建設機械", "重力を無効化する浮遊基礎工法"],
+            answer: "自己修復するコンクリート",
+          },
+        ];
+
+        let currentQuestionIndex = -1;
+        let answeredQuestions = [];
+
+        // 要素の取得
+        const $try_button = $(".try_botton");
+        const $display = $("#display");
+        const $choices = $(".select_1, .select_2, .select_3, .select_4");
+
+        // 時間管理の変数
+        let startTime;
+        let stopTime = 0;
+        let timeoutID;
+
+        // 次の問題を取得する関数
+        function getNextQuestion() {
+          if (answeredQuestions.length === quiz_questions.length) {
+            // 全問題が終わった場合
+            alert("全ての問題が終わりました！");
+            answeredQuestions = []; // リセット
+          }
+
+          let remainingQuestions = quiz_questions.filter(
+            (_, index) => !answeredQuestions.includes(index)
+          );
+
+          if (remainingQuestions.length > 0) {
+            let randomIndex = Math.floor(
+              Math.random() * remainingQuestions.length
+            );
+            let questionIndex = quiz_questions.indexOf(
+              remainingQuestions[randomIndex]
+            );
+            answeredQuestions.push(questionIndex);
+            return quiz_questions[questionIndex];
+          }
+          return null;
+        }
+
+        // 問題を表示する関数
+        function displayQuestion(question) {
+          $(".question").text(question.question);
+          question.choices.forEach((choice, index) => {
+            $(`.select_${index + 1}`).text(choice);
+          });
+        }
+
+        // クイズのイベントハンドラをセットアップ
+        function setupQuizHandlers(question) {
+          $choices.off("click"); // 既存のイベントハンドラを削除
+
+          $choices.each(function (index) {
+            $(this).on("click", function () {
+              if (question.choices[index] === question.answer) {
+                stopStopwatch();
+                const timeElapsed = stopTime;
+                alert(`正解です！\n回答時間: ${formatTime(timeElapsed)}`);
+                // 次の問題を表示
+                startNewQuestion();
+              } else {
+                alert("不正解です。もう一度チャレンジしてください！");
+              }
+            });
+          });
+        }
+
+        // 新しい問題を開始する関数
+        function startNewQuestion() {
+          const question = getNextQuestion();
+          if (question) {
+            displayQuestion(question);
+            stopTime = 0;
+            startStopwatch();
+            setupQuizHandlers(question);
+          }
+        }
+
+        // 開始ボタンのクリックイベント
+        $try_button.on("click", function () {
+          startNewQuestion();
+        });
+
+        // 既存のストップウォッチ関連の関数はそのまま
+        function displayTime() {
+          const currentTime = new Date(Date.now() - startTime + stopTime);
+          const h = String(currentTime.getHours() - 9).padStart(2, "0");
+          const m = String(currentTime.getMinutes()).padStart(2, "0");
+          const s = String(currentTime.getSeconds()).padStart(2, "0");
+          $display.text(`${h}:${m}:${s}`);
+          timeoutID = setTimeout(displayTime, 1000);
+        }
+
+        function startStopwatch() {
+          startTime = Date.now();
+          displayTime();
+        }
+
+        function stopStopwatch() {
+          clearTimeout(timeoutID);
+          stopTime = Date.now() - startTime;
+        }
+
+        function formatTime(ms) {
+          const seconds = Math.floor(ms / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const remainingSeconds = seconds % 60;
+          return `${minutes}分${remainingSeconds}秒`;
+        }
+      });
+    </script>
+  </body>
+</html>

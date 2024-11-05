@@ -1,0 +1,138 @@
+.quiz-containe{
+    max-width: 1200px;
+    text-align: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+}
+
+.main_box {
+    height: 400px; /* ビューポートの高さいっぱいに */
+    display: flex;
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+}
+
+.main_title{
+    /* vertical-align: middle; */
+    /* display: inline-block; */
+    align-items: center;
+    text-align: center;
+}
+
+.question_box {
+    width: 600px;
+    text-align: center;
+    margin: auto;
+    /* border: solid; */
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.try_botton{
+    background-color: rgb(88, 221, 134);
+    border-radius: 20px;
+    color: white;
+    padding: 10px 20px;
+}
+
+.try_botton:active{
+    background: #69821b; /* 濃い緑色 */    
+}
+
+
+.question_area h2{
+    padding-left: 30px;
+    text-align: left;
+    /* text-align: left; */
+}
+.time_box{
+    text-align: center;
+    justify-content: space-between;
+    width: 600px;
+    height: 200px;
+    margin: 0 auto;  /* 左右中央揃え */
+    align-items: center;    /* 子要素を水平方向で中央揃え */
+    gap: 20px;
+}
+
+.time_box_area {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 水平方向で中央揃え */
+    gap: 20px;
+}
+.choices_box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.choices_box button{
+    width: 300px;
+    border-radius: 20px;
+    background-color: rgb(88, 221, 134);
+    color: white;
+    font-weight: bold;
+    text-shadow: 20px;
+    padding: 5px;
+    margin-bottom: 30px;
+}
+.choices_box button:active{
+    background: #69821b; /* 濃い緑色 */  
+}
+
+.result_box {
+    display: flex;
+    /* フレックス */
+    justify-content: space-between;
+    /* 幅 */
+    gap: 20px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* 左側のブロック */
+.stats_block {
+    flex: 1;
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.count_area, .count {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 右側のブロック */
+.evaluation_area {
+    flex: 1;
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.comment, .evaluation, .img {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.question{
+    text-align: left;
+    margin: 20px;
+}
+
+/* レスポンシブ対応 */
+@media screen and (max-width: 768px) {
+    .result_box {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
